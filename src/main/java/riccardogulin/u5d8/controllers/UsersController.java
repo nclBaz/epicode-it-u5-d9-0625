@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import riccardogulin.u5d8.entities.User;
 import riccardogulin.u5d8.exceptions.ValidationException;
 import riccardogulin.u5d8.payloads.NewUserRespDTO;
@@ -70,6 +71,21 @@ public class UsersController {
 	@ResponseStatus(HttpStatus.NO_CONTENT) // 204
 	public void getByIdAndDelete(@PathVariable UUID userId) {
 		this.usersService.findByIdAndDelete(userId);
+	}
+
+	@PatchMapping("/{userId}/avatar")
+	public void uploadAvatar(@RequestParam("profile_picture") MultipartFile file, @PathVariable UUID userId) {
+		// Questo endpoint non gestirà JSON come gli altri. Il payload sarà di tipo MULTIPART/FORMDATA
+		// (formato pensato per l'upload di file)
+
+		// profile_picture è un nome qualsiasi, però deve corrispondere ESATTAMENTE al campo del FormData dove verrà inserito
+		// il file. Altrimenti il file non verrà trovato
+		System.out.println(file.getOriginalFilename());
+		System.out.println(file.getSize());
+		System.out.println(file.getContentType());
+
+		this.usersService.avatarUpload(file, userId);
+
 	}
 
 }
